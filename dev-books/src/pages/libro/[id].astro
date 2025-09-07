@@ -1,6 +1,6 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 
 // Define getStaticPaths para generar rutas estáticas basadas en los slugs de tus libros
@@ -16,12 +16,20 @@ export const getStaticPaths: GetStaticPaths = async () => {
 const { book } = Astro.props
 const { data } = book
 const {title, author, img, readtime, description, buy } = data
+
+const { Content} = await render(book)
 ---
 
 <Layout title={`${title} — Great Reads`}>
-  
-    <h1>{title}</h1>
-    <p>{author}</p>
-    
+  <div class="divbooks">
+    <aside>
+      <img class="imagerounded" src={`/${img}`} alt={title} />
+    </aside>
+    <main class="main">
+      <h1>{title}</h1>
+      <Content />
+    </main>
+     
+  </div>
     
 </Layout>
