@@ -8,15 +8,32 @@
 		<title>Astro Basics</title>
 	</head>
 	<body>
+	   <div>
 		<slot />
+		</div>
 	</body>
 </html>
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
+<style is:global>
+
+	html{
+       
 	}
+    
+	body {
+		@apply grid place-content-center p-20;
+	}
+
+	body > div {
+		@apply container;
+	}
+    h1{
+		text:center; 
+		text:7xl; 
+		font:extrabold;
+	}
+	span{
+	    display:block;	
+	}
+
 </style>
