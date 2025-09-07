@@ -1,6 +1,12 @@
 ---
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const books = await getCollection('books')
+console.log(books)
+
+
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
@@ -8,8 +14,39 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="Welcome to Astro">
 	<main>
-		<h1>Books 📚
-		  <span>recomendations</span></h1>
+		<h1>Great 📚
+		  <span>Reads</span></h1>
 	</main>
+
+	<section>
+       <div class="div1">
+		<div class="div2">
+			{
+  books.map(book => (
+    <article class="flex">
+      <a href={`/libro/${book.slug}`} class="mb-2 xl:mb-0 transition hover:scale-110">
+        <img
+          transition:name={`img-${book.slug}`}
+          class="mr-5 w-48 rounded"
+          src={`/${book.data.img}`}
+          alt={book.data.title}
+        />
+      </a>
+
+      <div class="flex flex-col justify-center">
+        <h2 transition:name={`title-${book.slug}`} class="mb-2 text-2xl font-bold leading-tight text-white">
+          {book.data.title}
+        </h2>
+
+        <p class="mb-4 text-gray-300 max-w-sm">{book.data.description}</p>
+        <span class="text-xs">⏳ Lectura en {book.data.readtime} minutos</span>
+      </div>
+    </article>
+  ))
+}
+
+		</div>
+	   </div>
+	</section>
 	
 </Layout>

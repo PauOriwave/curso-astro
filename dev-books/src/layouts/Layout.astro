@@ -15,25 +15,46 @@
 </html>
 
 <style is:global>
-
+ 
 	html{
        
 	}
-    
+    img {
+        width: 350px; /* equivalente a w-48 en Tailwind */
+        height: auto;
+        border-radius: 0.5rem; /* opcional, para redondear */
+		
+		
+    }
 	body {
 		@apply grid place-content-center p-20;
+		
 	}
 
 	body > div {
 		@apply container;
 	}
     h1{
-		text:center; 
-		font-size:4.5rem; 
-		font-weight:800;
+		text-align:center; 
+		font-size:5rem; 
+		font-weight:1000;
 	}
 	span{
 	    display:block;	
 	}
+    .div1{
+		
+		
+	}
+    .div2 {
+       display: grid;
+       gap: 1.5rem; 
+     }
 
+    @media (min-width: 768px) {
+   .div2 {
+    grid-template-columns: repeat(2, 1fr);
+    
+  }
+}
 </style>
