@@ -23,7 +23,9 @@
         width: 350px; /* equivalente a w-48 en Tailwind */
         height: auto;
         border-radius: 0.5rem; /* opcional, para redondear */
-		
+		margin-right: 1.25rem; /* mr-5 */
+        width: 12rem;           /* w-48 = 192px */
+        border-radius: 0.5rem;  /* rounded */
 		
     }
 	body {
@@ -51,10 +53,24 @@
        gap: 1.5rem; 
      }
 
+	 article {
+  display: flex;
+  }
+
+   a {
+    margin-bottom: 0.5rem; /* mb-2 */
+    transition: transform 0.2s ease-in-out;
+   }
+   a:hover {
+  transform: scale(1.1);
+  }
+
     @media (min-width: 768px) {
    .div2 {
     grid-template-columns: repeat(2, 1fr);
     
   }
 }
+
+
 </style>
