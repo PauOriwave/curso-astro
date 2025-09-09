@@ -1,6 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
-import { Astro } from 'astro';
+
 ---
 
 <!doctype html>
@@ -90,6 +90,32 @@ import { Astro } from 'astro';
 	border-radius: 0.25rem;
     width: 18rem;
     height: auto;
+   }
+
+   .botoncomprar{    
+	  display: inline-flex;              /* inline-flex */
+      gap: 0.5rem;                       /* gap-2 */
+      align-items: center;               /* items-center */
+      justify-content: center;           /* justify-center */
+      text-align: center;                /* text-center */
+
+      background-color: #facc15;         /* bg-yellow-400 */
+      color: black;                      /* text-black */
+      font-weight: bold;                 /* font-bold */
+      padding: 0.5rem 1rem;              /* py-2 px-4 */
+      border-radius: 0.5rem;             /* rounded-lg */
+      border: 1px solid #eab308;         /* border-yellow-500 */
+
+      transition: all 0.2s ease-in-out;  /* transition duration-200 ease-in-out */
+   }
+
+   .botoncomprar:hover{
+	background-color: #eab308;
+    transform: scale(1.05);
+   }
+
+   .botoncomprar:active{
+    background-color: #ca8a04;
    }
 
    a {
