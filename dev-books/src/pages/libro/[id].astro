@@ -1,24 +1,32 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { getCollection, render } from 'astro:content';
-import {SHOW_BUY_BUTTON} from "astro:env/server"
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { SHOW_BUY_BUTTON, SCORE_API_ENDPOINT } from 'astro:env/server';
 import Layout from '../../layouts/Layout.astro';
 
-// Define getStaticPaths para generar rutas estáticas basadas en los slugs de tus libros
-export const getStaticPaths: GetStaticPaths = async () => {
+type Props = { book: CollectionEntry<'books'> };
+
+export const getStaticPaths = (async () => {
   const books = await getCollection('books');
-  
   return books.map((book) => ({
-     params: {id: book.slug},
-     props: {book}
+    params: { id: book.slug },
+    props: { book },
   }));
-};
+}) satisfies GetStaticPaths<Props>;
 
-const { book } = Astro.props
-const { data } = book
-const {title, author, img, readtime, description, buy } = data
+const { book } = Astro.props;
+const { data } = book;
+const { title, author, img, readtime, description, buy } = data;
 
-const { Content} = await render(book)
+const { Content } = await render(book);
+
+let scoreServer: string | undefined;
+try {
+  const res = await fetch(SCORE_API_ENDPOINT, { cache: 'no-store' });
+  if (res.ok) {
+    scoreServer = (await res.text()).trim() || undefined;
+  }
+} catch {}
 ---
 
 <Layout title={`${title} — Great Reads`}>
@@ -26,17 +34,41 @@ const { Content} = await render(book)
     <aside>
       <a href='/' class="hover:underline opacity-70">← Volver atrás</a>
       <img class="imagerounded" src={`/${img}`} alt={title} />
-      {
-        SHOW_BUY_BUTTON && (
-        <a class="botoncomprar" href={buy.spain} title="comprar libro" target="_blank" rel="noopener noreferrer"> Comprar en Amazon España </a>
-        )
-      }
+      <span id="score" class="text-xs">⭐ Valoración: {scoreServer ?? '—'}/5</span>
+      {SHOW_BUY_BUTTON && (
+        <a class="botoncomprar" href={buy.spain} title="comprar libro" target="_blank" rel="noopener noreferrer">
+          Comprar en Amazon España
+        </a>
+      )}
     </aside>
     <main class="main">
       <h1>{title}</h1>
       <Content />
     </main>
-     
   </div>
-    
 </Layout>
+
+<script is:inline>
+  const SCORE_API_ENDPOINT = {JSON.stringify(SCORE_API_ENDPOINT)};
+
+  (document.readyState === 'loading'
+    ? document.addEventListener('DOMContentLoaded', go)
+    : go()
+  );
+
+  function go() {
+    const el = document.querySelector('#score');
+    if (!el) return;
+
+    fetch(SCORE_API_ENDPOINT, { cache: 'no-store' })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+      })
+      .then((raw) => {
+        const score = (raw || '').trim();
+        if (score) el.textContent = `⭐ Valoración: ${score}/5`;
+      })
+      .catch(() => {});
+  }
+</script>
