@@ -1,0 +1,79 @@
+---
+/**
+ * src/components/bookScore.astro
+ *
+ * - Props: { slug?: string }
+ * - Behavior:
+ *   1) Server fetch para garantizar un valor inicial.
+ *   2) Inyecta endpoint final al cliente (con {slug} ya sustituido si aplica).
+ *   3) Cliente intenta refrescar la puntuación cuando la isla se hidrata.
+ *
+ * Uso: <bookScore client:idle slug={book.slug} />
+ */
+
+const { slug } = Astro.props as { slug?: string };
+
+import { SCORE_API_ENDPOINT } from 'astro:env/server';
+
+let scoreServer: string | undefined = undefined;
+
+// Calculamos el endpoint que usaremos en servidor (y que inyectaremos tal cual al cliente)
+let endpointToUse = SCORE_API_ENDPOINT;
+if (typeof endpointToUse === 'string' && slug && endpointToUse.includes('{slug}')) {
+  endpointToUse = endpointToUse.replaceAll('{slug}', encodeURIComponent(slug));
+}
+
+// Server-side fetch (no rompe si falla)
+try {
+  const res = await fetch(endpointToUse, { cache: 'no-store' });
+  if (res.ok) {
+    const raw = (await res.text()).trim();
+    if (raw) scoreServer = raw;
+  }
+} catch (err) {
+  // silencioso — si falla, scoreServer queda undefined
+}
+
+// uid único para el span (determinista si hay slug)
+const uid = slug ? `score-${String(slug).replace(/\s+/g, '-').toLowerCase()}` : `score-${Math.random().toString(36).slice(2,9)}`;
+
+// Inyectamos la endpoint FINAL que se usó en server (ya con slug si hacía falta)
+// así el cliente hace exactamente la misma petición
+const clientEndpoint = endpointToUse;
+---
+
+<span id={uid} class="text-xs">⭐ Valoración: {scoreServer ?? '—'}/5</span>
+
+<!-- Script inyectado: usa el uid y clientEndpoint seguros -->
+<script is:inline type="module">
+  const UID = {JSON.stringify(uid)};
+  const ENDPOINT = {JSON.stringify(clientEndpoint)};
+
+  // Ensure DOM ready
+  (document.readyState === 'loading'
+    ? document.addEventListener('DOMContentLoaded', go)
+    : go()
+  );
+
+  function go() {
+    const el = document.getElementById(UID);
+    if (!el) return;
+
+    // Debug (descomenta si quieres ver logs)
+    // console.debug('[bookScore] endpoint:', ENDPOINT);
+
+    fetch(ENDPOINT, { cache: 'no-store' })
+      .then((res) => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then((raw) => {
+        const score = (raw || '').trim();
+        if (score) el.textContent = `⭐ Valoración: ${score}/5`;
+      })
+      .catch(() => {
+        // No hacemos nada — mantenemos el valor que vino del servidor (o el '—')
+      });
+  }
+</script>
+

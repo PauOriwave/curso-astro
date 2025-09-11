@@ -1,8 +1,9 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
-import { SHOW_BUY_BUTTON, SCORE_API_ENDPOINT } from 'astro:env/server';
+import { SHOW_BUY_BUTTON } from 'astro:env/server';
 import Layout from '../../layouts/Layout.astro';
+import BookScore from '../../components/bookScore.astro'; // <- import explícito si lo necesitas
 
 type Props = { book: CollectionEntry<'books'> };
 
@@ -19,14 +20,6 @@ const { data } = book;
 const { title, author, img, readtime, description, buy } = data;
 
 const { Content } = await render(book);
-
-let scoreServer: string | undefined;
-try {
-  const res = await fetch(SCORE_API_ENDPOINT, { cache: 'no-store' });
-  if (res.ok) {
-    scoreServer = (await res.text()).trim() || undefined;
-  }
-} catch {}
 ---
 
 <Layout title={`${title} — Great Reads`}>
@@ -34,7 +27,7 @@ try {
     <aside>
       <a href='/' class="hover:underline opacity-70">← Volver atrás</a>
       <img class="imagerounded" src={`/${img}`} alt={title} />
-      <span id="score" class="text-xs">⭐ Valoración: {scoreServer ?? '—'}/5</span>
+      <bookScore client:idle slug={book.slug} />
       {SHOW_BUY_BUTTON && (
         <a class="botoncomprar" href={buy.spain} title="comprar libro" target="_blank" rel="noopener noreferrer">
           Comprar en Amazon España
@@ -48,27 +41,3 @@ try {
   </div>
 </Layout>
 
-<script is:inline>
-  const SCORE_API_ENDPOINT = {JSON.stringify(SCORE_API_ENDPOINT)};
-
-  (document.readyState === 'loading'
-    ? document.addEventListener('DOMContentLoaded', go)
-    : go()
-  );
-
-  function go() {
-    const el = document.querySelector('#score');
-    if (!el) return;
-
-    fetch(SCORE_API_ENDPOINT, { cache: 'no-store' })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.text();
-      })
-      .then((raw) => {
-        const score = (raw || '').trim();
-        if (score) el.textContent = `⭐ Valoración: ${score}/5`;
-      })
-      .catch(() => {});
-  }
-</script>
