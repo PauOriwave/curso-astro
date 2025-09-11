@@ -27,7 +27,7 @@ const { Content } = await render(book);
     <aside>
       <a href='/' class="hover:underline opacity-70">← Volver atrás</a>
       <img class="imagerounded" src={`/${img}`} alt={title} />
-      <bookScore client:idle slug={book.slug} />
+      <BookScore client:idle slug={book.slug} />
       {SHOW_BUY_BUTTON && (
         <a class="botoncomprar" href={buy.spain} title="comprar libro" target="_blank" rel="noopener noreferrer">
           Comprar en Amazon España
