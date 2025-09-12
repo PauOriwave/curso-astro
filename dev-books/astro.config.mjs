@@ -1,29 +1,22 @@
 // @ts-check
 import { defineConfig, envField } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import node from '@astrojs/node'; // adapter
 
 export default defineConfig({
-  // (opcional) si despliegas como SSR, añade: output: 'server'
-  // output: 'server',
+  output: 'server',
 
-  env: {
-    schema: {
-      // Igual que tu ejemplo
-
-      SHOW_BUY_BUTTON: envField.boolean({
-        default: true,
-        context: 'server',
-        access: 'public',
-      }),
-
-      SCORE_API_ENDPOINT: envField.string({
-        context: 'server',
-        access: 'public',
-      }),
-    },
-  },
+  // IMPORTANT: especificar mode (requerido por la versión instalada)
+  adapter: node({ mode: 'standalone' }), // <-- aquí está la clave
 
   vite: {
     plugins: [tailwindcss()],
+  },
+
+  env: {
+    schema: {
+      SHOW_BUY_BUTTON: envField.boolean({ context: 'server', access: 'public', default: true }),
+      SCORE_API_ENDPOINT: envField.string({ context: 'server', access: 'public' }),
+    },
   },
 });

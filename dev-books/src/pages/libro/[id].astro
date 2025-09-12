@@ -1,12 +1,14 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getCollection, getEntryBySlug, render, type CollectionEntry } from 'astro:content';
 import { SHOW_BUY_BUTTON } from 'astro:env/server';
 import Layout from '../../layouts/Layout.astro';
-import BookScore from '../../components/bookScore.astro'; // <- import explícito si lo necesitas
+import BuyButton from '../../components/BuyButton.astro';
+import BookScore from '../../components/bookScore.astro';
 
 type Props = { book: CollectionEntry<'books'> };
 
+// getStaticPaths sigue igual (genera las rutas)
 export const getStaticPaths = (async () => {
   const books = await getCollection('books');
   return books.map((book) => ({
@@ -15,12 +17,31 @@ export const getStaticPaths = (async () => {
   }));
 }) satisfies GetStaticPaths<Props>;
 
-const { book } = Astro.props;
+// Intentamos obtener `book` desde Astro.props.
+// Si no existe (p. ej. navegación cliente o caso extraño), lo buscamos por slug.
+let book = (Astro.props as Props | undefined)?.book as CollectionEntry<'books'> | undefined;
+
+if (!book) {
+  // Astro.params.id viene del nombre del archivo [id].astro
+  const slug = Astro.params.id;
+  if (typeof slug === 'string') {
+    book = await getEntryBySlug('books', slug) as CollectionEntry<'books'> | null;
+  }
+}
+
+if (!book) {
+  // Si todavía no hay book, devolvemos 404 amigable
+  throw new Error(`Book not found for slug: ${String(Astro.params.id)}`);
+}
+
+// Ahora `book` está garantizado
 const { data } = book;
 const { title, author, img, readtime, description, buy } = data;
 
 const { Content } = await render(book);
 ---
+
+
 
 <Layout title={`${title} — Great Reads`}>
   <div class="divbooks">
@@ -28,11 +49,10 @@ const { Content } = await render(book);
       <a href='/' class="hover:underline opacity-70">← Volver atrás</a>
       <img class="imagerounded" src={`/${img}`} alt={title} />
       <BookScore client:idle slug={book.slug} />
-      {SHOW_BUY_BUTTON && (
-        <a class="botoncomprar" href={buy.spain} title="comprar libro" target="_blank" rel="noopener noreferrer">
-          Comprar en Amazon España
-        </a>
-      )}
+      {
+      SHOW_BUY_BUTTON && <BuyButton server:defer buy={buy} />
+      
+      }
     </aside>
     <main class="main">
       <h1>{title}</h1>
