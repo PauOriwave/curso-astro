@@ -1,0 +1,16 @@
+---
+import { ACTION_ERROR_CODES } from "astro:actions"
+
+const SPAIN = 'ES'
+const USA = 'US'
+
+const country = Astro.request.headers.get('X-Vercel-IP-Country') ?? 'ES'
+const storeCountry = country == SPAIN ? 'spain' : 'usa'
+const countryName = country == SPAIN ? 'España' : 'Estdos Unidos'
+const {buy} = Astro.props
+const url = buy[storeCountry]
+---
+
+<a class="botoncomprar" href={url} title="comprar libro" target="_blank" rel="noopener noreferrer">
+          Comprar en Amazon {countryName}
+</a>
