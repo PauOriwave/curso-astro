@@ -45,15 +45,23 @@ const { Content } = await render(book);
 
 <Layout title={`${title} — Great Reads`}>
   <div class="divbooks">
-    <aside>
-      <a href='/' class="hover:underline opacity-70">← Volver atrás</a>
-      <img class="imagerounded" src={`/${img}`} alt={title} />
+    
+      
+    
+      <div class="aspect-[3/4] w-48 overflow-hidden rounded-lg shadow-md">
+       <img class="imagerounded" src={`/${img}`} alt={title} />
+       <a href='/' class="hover:underline opacity-70">← Volver atrás</a>
       <BookScore client:idle slug={book.slug} />
       {
       SHOW_BUY_BUTTON && <BuyButton server:defer buy={buy} />
       
       }
-    </aside>
+       class="w-full h-full object-cover">
+      </div>
+      
+      
+      
+    
     <main class="main">
       <h1>{title}</h1>
       <Content />
