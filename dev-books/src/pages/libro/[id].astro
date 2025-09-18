@@ -8,7 +8,6 @@ import BookScore from '../../components/bookScore.astro';
 
 type Props = { book: CollectionEntry<'books'> };
 
-// getStaticPaths sigue igual (genera las rutas)
 export const getStaticPaths = (async () => {
   const books = await getCollection('books');
   return books.map((book) => ({
@@ -17,12 +16,9 @@ export const getStaticPaths = (async () => {
   }));
 }) satisfies GetStaticPaths<Props>;
 
-// Intentamos obtener `book` desde Astro.props.
-// Si no existe (p. ej. navegación cliente o caso extraño), lo buscamos por slug.
 let book = (Astro.props as Props | undefined)?.book as CollectionEntry<'books'> | undefined;
 
 if (!book) {
-  // Astro.params.id viene del nombre del archivo [id].astro
   const slug = Astro.params.id;
   if (typeof slug === 'string') {
     book = await getEntryBySlug('books', slug) as CollectionEntry<'books'> | null;
@@ -30,42 +26,124 @@ if (!book) {
 }
 
 if (!book) {
-  // Si todavía no hay book, devolvemos 404 amigable
   throw new Error(`Book not found for slug: ${String(Astro.params.id)}`);
 }
 
-// Ahora `book` está garantizado
 const { data } = book;
-const { title, author, img, readtime, description, buy } = data;
+const { title, author, img, readtime, description, buy, price = 9.99 } = data;
 
 const { Content } = await render(book);
 ---
 
-
-
 <Layout title={`${title} — Great Reads`}>
   <div class="divbooks">
     
-      
+    <!-- Volver atrás ARRIBA, fuera de todo -->
+    <a href='/' class="hover:underline opacity-70 mb-4 inline-block">← Volver atrás</a>
     
-      <div class="aspect-[3/4] w-48 overflow-hidden rounded-lg shadow-md">
-       <img class="imagerounded" src={`/${img}`} alt={title} />
-       <a href='/' class="hover:underline opacity-70">← Volver atrás</a>
-      <BookScore client:idle slug={book.slug} />
-      {
-      SHOW_BUY_BUTTON && <BuyButton server:defer buy={buy} />
+    <!-- Layout con ALINEACIÓN FORZADA -->
+    <article class="flex items-start" style="gap: 4rem;">
       
-      }
-       class="w-full h-full object-cover">
+      <!-- IMAGEN A LA IZQUIERDA -->
+      <div class="flex-shrink-0">
+        <div class="aspect-[3/4] w-48 overflow-hidden rounded shadow-md">
+          <img 
+            transition:name={`img-${book.slug}`}
+            class="w-full h-full object-cover" 
+            src={`/${img}`} 
+            alt={title} 
+          />
+        </div>
+        
+        <!-- OPCIONES DEBAJO DE LA IMAGEN -->
+        <div style="margin-top: 1.5rem;">
+          <div style="margin-bottom: 1rem;">
+            <BookScore client:idle slug={book.slug} />
+          </div>
+          
+          <!-- Botón carrito -->
+          <div style="margin-bottom: 1rem;">
+            <button 
+              class="add-to-cart-btn w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors flex items-center justify-center gap-1"
+              data-book={JSON.stringify({
+                id: book.slug,
+                title: title,
+                author: author,
+                price: price,
+                img: img
+              })}
+            >
+              +🛒 €{price}
+            </button>
+          </div>
+          
+          {SHOW_BUY_BUTTON && (
+            <div style="margin-bottom: 1rem;">
+              <BuyButton server:defer buy={buy} />
+            </div>
+          )}
+        </div>
       </div>
-      
-      
-      
-    
-    <main class="main">
-      <h1>{title}</h1>
-      <Content />
-    </main>
+
+      <!-- CONTENIDO A LA DERECHA - ALINEADO CON LA IMAGEN -->
+      <div style="padding-left: 2rem; margin-top: 0; padding-top: 0;">
+        <h1 transition:name={`title-${book.slug}`} class="text-2xl font-bold leading-tight text-white" style="margin-top: 0; margin-bottom: 1.5rem;">
+          {title}
+        </h1>
+
+        <p class="text-gray-300 max-w-sm" style="margin-bottom: 2rem;">{description}</p>
+        <span class="text-xs" style="margin-bottom: 2rem; display: block;">⏳ Lectura en {readtime} minutos</span>
+        
+        <div class="prose prose-invert max-w-2xl">
+          <Content />
+        </div>
+      </div>
+
+    </article>
   </div>
 </Layout>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('click', (e) => {
+      const button = e.target.closest('.add-to-cart-btn');
+      if (!button) return;
+      
+      e.preventDefault();
+      const bookData = JSON.parse(button.dataset.book);
+      
+      // Cargar carrito actual
+      let cart = [];
+      try {
+        cart = JSON.parse(localStorage.getItem('ebook-cart') || '[]');
+      } catch (e) {
+        cart = [];
+      }
+      
+      // Añadir o actualizar item
+      const existingItem = cart.find(item => item.id === bookData.id);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({ ...bookData, quantity: 1 });
+      }
+      
+      // Guardar carrito
+      localStorage.setItem('ebook-cart', JSON.stringify(cart));
+      
+      // Feedback visual
+      const originalHTML = button.innerHTML;
+      button.innerHTML = '✓ Añadido';
+      button.classList.add('bg-green-600');
+      button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+      
+      setTimeout(() => {
+        button.innerHTML = originalHTML;
+        button.classList.remove('bg-green-600');
+        button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+      }, 1500);
+      
+      console.log('Producto añadido:', bookData);
+    });
+  });
+</script>

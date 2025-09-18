@@ -7,6 +7,7 @@ description: Una de las obras literarias de ciencia ficción que ha cambiado el 
 buy:
   spain: https://www.amazon.es/dp/8466353771
   usa: https://www.amazon.com/dp/B00QPJS8U4
+price: 19.99 
 ---
 
 En el desértico planeta **Arrakis**, el agua es el bien más preciado y llorar a los muertos, el símbolo de máxima prodigalidad. Pero algo hace de Arrakis una pieza estratégica para los intereses del Emperador, las Grandes Casas y la Cofradía, los tres grandes poderes de la galaxia. Arrakis es el único origen conocido de la melange, preciosa especia y uno de los bienes más codiciados del universo.

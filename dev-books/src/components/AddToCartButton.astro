@@ -1,0 +1,83 @@
+---
+export interface Props {
+  book: {
+    id: string;
+    title: string;
+    author: string;
+    price: number;
+    img: string;
+  }
+}
+
+const { book } = Astro.props;
+---
+
+<button 
+  class="add-to-cart-btn w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2"
+  data-book={JSON.stringify(book)}
+>
+  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+  </svg>
+  <span>Añadir al Carrito - €{book.price}</span>
+</button>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('click', (e) => {
+      const button = e.target.closest('.add-to-cart-btn');
+      if (!button) return;
+      
+      e.preventDefault();
+      const bookData = JSON.parse(button.dataset.book);
+      
+      // Cargar carrito actual
+      let cart = [];
+      try {
+        cart = JSON.parse(localStorage.getItem('ebook-cart') || '[]');
+      } catch (e) {
+        cart = [];
+      }
+      
+      // Añadir o actualizar item
+      const existingItem = cart.find(item => item.id === bookData.id);
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        cart.push({ ...bookData, quantity: 1 });
+      }
+      
+      // Guardar carrito
+      localStorage.setItem('ebook-cart', JSON.stringify(cart));
+      
+      // Feedback visual
+      const originalHTML = button.innerHTML;
+      button.innerHTML = '<span>✓ Añadido</span>';
+      button.classList.add('bg-green-600');
+      button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+      
+      setTimeout(() => {
+        button.innerHTML = originalHTML;
+        button.classList.remove('bg-green-600');
+        button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+      }, 2000);
+      
+      // Actualizar contador del carrito
+      updateCartBadge(cart);
+      
+      // Evento para sincronización
+      window.dispatchEvent(new CustomEvent('cart-updated', { 
+        detail: { cart } 
+      }));
+    });
+  });
+  
+  function updateCartBadge(cart) {
+    const cartBadge = document.querySelector('.cart-badge');
+    if (cartBadge) {
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      cartBadge.textContent = totalItems;
+      cartBadge.style.display = totalItems > 0 ? 'flex' : 'none';
+    }
+  }
+</script>

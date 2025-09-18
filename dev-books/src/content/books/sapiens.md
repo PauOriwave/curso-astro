@@ -7,6 +7,7 @@ description: Una de las obras literarias de Fantasía oscura que ha cambiado el 
 buy:
   spain: https://www.amazon.es/Sapiens-animales-dioses-historia-humanidad/dp/8499926223
   usa: https://www.amazon.com/Sapiens-Humankind-Yuval-Noah-Harari/dp/0062316095
+price: 19.99
 ---
 
 El libro de no ficción de la década.

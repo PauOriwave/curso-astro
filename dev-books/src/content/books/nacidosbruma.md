@@ -7,6 +7,7 @@ description: Una de las obras literarias de Fantasía oscura que ha cambiado el 
 buy:
   spain: https://www.amazon.es/Nacidos-Bruma-Trilog%C3%ADa-Original-Mistborn/dp/8413149819
   usa: https://www.amazon.com/-/es/dp/B001QKBHG4
+price: 19.99
 ---
 
 Las brumas gobiernan la noche. El **lord Legislador** domina el mundo.

@@ -1,5 +1,6 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import ShoppingCart from '../components/ShoppingCart.astro';
 
 ---
 
@@ -17,6 +18,8 @@ import { ClientRouter } from 'astro:transitions';
 	   <div>
 		<slot />
 		</div>
+     <!-- Añadir el carrito -->
+    <ShoppingCart />
 	</body>
 </html>
 
