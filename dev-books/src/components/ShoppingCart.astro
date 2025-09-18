@@ -1,0 +1,445 @@
+---
+// src/components/ShoppingCart.astro
+---
+
+<!-- Icono del carrito flotante -->
+<div class="cart-container">
+  <div id="cart-icon" class="cart-float-icon">
+    <button 
+      id="cart-toggle"
+      class="cart-button"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6M7 13h10M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6"></path>
+      </svg>
+      <span id="cart-badge" class="cart-badge">0</span>
+    </button>
+  </div>
+
+  <!-- Panel del carrito -->
+  <div id="cart-panel" class="cart-panel">
+    <div class="cart-panel-content">
+      
+      <!-- Header -->
+      <div class="cart-header">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-bold text-gray-900">🛒 Mi Carrito</h2>
+          <button id="cart-close" class="text-gray-500 hover:text-gray-700 text-2xl">
+            ×
+          </button>
+        </div>
+      </div>
+
+      <!-- Contenido del carrito -->
+      <div id="cart-content" class="cart-content">
+        <div id="cart-empty" class="cart-empty">
+          <div class="text-4xl mb-4">📚</div>
+          <p>Tu carrito está vacío</p>
+          <p class="text-sm mt-2">¡Añade algunos ebooks!</p>
+        </div>
+        
+        <div id="cart-items" class="space-y-4 hidden"></div>
+      </div>
+
+      <!-- Footer del carrito -->
+      <div id="cart-footer" class="cart-footer">
+        <div class="mb-4">
+          <div class="flex justify-between items-center text-xl font-bold">
+            <span>Total:</span>
+            <span id="cart-total" class="text-green-600">€0.00</span>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-2 text-gray-700">Email:</label>
+          <input
+            type="email"
+            id="customer-email"
+            placeholder="tu@email.com"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <button
+          id="checkout-btn"
+          class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2-2H5a2 2 0 01-2-2z"></path>
+          </svg>
+          Comprar Ahora
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Overlay -->
+  <div id="cart-overlay" class="cart-overlay"></div>
+</div>
+
+<style>
+  .cart-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .cart-float-icon {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    pointer-events: all;
+  }
+
+  .cart-button {
+    background: #2563eb;
+    color: white;
+    padding: 12px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .cart-button:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+  }
+
+  .cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #dc2626;
+    color: white;
+    font-size: 12px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  .cart-badge.show {
+    display: flex;
+  }
+
+  .cart-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 400px;
+    background: white;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.3);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 9998;
+    pointer-events: all;
+  }
+
+  .cart-panel.show {
+    transform: translateX(0);
+  }
+
+  .cart-panel-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cart-header {
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+  }
+
+  .cart-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .cart-empty {
+    text-align: center;
+    padding: 40px 0;
+    color: #6b7280;
+  }
+
+  .cart-footer {
+    padding: 20px;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+    display: none;
+  }
+
+  .cart-footer.show {
+    display: block;
+  }
+
+  .cart-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9997;
+    pointer-events: all;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .cart-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media (max-width: 768px) {
+    .cart-panel {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Variables globales para evitar problemas de TypeScript
+  let cartInstance;
+  let cartData = [];
+
+  // Funciones globales que pueden ser llamadas desde HTML
+  window.updateCartQuantity = function(id, quantity) {
+    if (cartInstance) {
+      cartInstance.updateQuantity(id, quantity);
+    }
+  };
+
+  window.removeFromCart = function(id) {
+    if (cartInstance) {
+      cartInstance.removeFromCart(id);
+    }
+  };
+
+  class ShoppingCart {
+    constructor() {
+      this.cart = this.loadCart();
+      this.isOpen = false;
+      this.initializeEvents();
+      this.render();
+      
+      // Escuchar cuando se añaden productos
+      window.addEventListener('cart-updated', () => {
+        this.cart = this.loadCart();
+        this.render();
+      });
+
+      // Hacer disponible globalmente
+      cartInstance = this;
+      cartData = this.cart;
+    }
+
+    loadCart() {
+      try {
+        return JSON.parse(localStorage.getItem('ebook-cart') || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    saveCart() {
+      localStorage.setItem('ebook-cart', JSON.stringify(this.cart));
+      cartData = this.cart;
+    }
+
+    removeFromCart(id) {
+      this.cart = this.cart.filter(item => item.id !== id);
+      this.saveCart();
+      this.render();
+    }
+
+    updateQuantity(id, quantity) {
+      if (quantity <= 0) {
+        this.removeFromCart(id);
+        return;
+      }
+      
+      const item = this.cart.find(item => item.id === id);
+      if (item) {
+        item.quantity = quantity;
+        this.saveCart();
+        this.render();
+      }
+    }
+
+    getTotal() {
+      return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    }
+
+    clearCart() {
+      this.cart = [];
+      this.saveCart();
+      this.render();
+    }
+
+    toggleCart() {
+      this.isOpen = !this.isOpen;
+      const panel = document.getElementById('cart-panel');
+      const overlay = document.getElementById('cart-overlay');
+      
+      if (panel && overlay) {
+        panel.classList.toggle('show', this.isOpen);
+        overlay.classList.toggle('show', this.isOpen);
+        
+        document.body.style.overflow = this.isOpen ? 'hidden' : '';
+      }
+    }
+
+    render() {
+      this.updateCartIcon();
+      this.renderCartItems();
+      this.updateTotal();
+    }
+
+    updateCartIcon() {
+      const badge = document.getElementById('cart-badge');
+      const count = this.cart.reduce((total, item) => total + item.quantity, 0);
+      
+      if (badge) {
+        badge.textContent = count.toString();
+        badge.classList.toggle('show', count > 0);
+      }
+    }
+
+    renderCartItems() {
+      const itemsContainer = document.getElementById('cart-items');
+      const emptyContainer = document.getElementById('cart-empty');
+      const footer = document.getElementById('cart-footer');
+
+      if (!itemsContainer || !emptyContainer || !footer) return;
+
+      if (this.cart.length === 0) {
+        itemsContainer.classList.add('hidden');
+        emptyContainer.style.display = 'block';
+        footer.classList.remove('show');
+        return;
+      }
+
+      itemsContainer.classList.remove('hidden');
+      emptyContainer.style.display = 'none';
+      footer.classList.add('show');
+
+      itemsContainer.innerHTML = this.cart.map(item => `
+        <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+          <img
+            src="/${item.img}"
+            alt="${item.title}"
+            class="w-12 h-16 object-cover rounded"
+          />
+          <div class="flex-1 min-w-0">
+            <h3 class="font-medium text-sm text-gray-900">${item.title}</h3>
+            <p class="text-gray-600 text-xs">por ${item.author}</p>
+            <p class="text-green-600 font-bold text-sm">€${item.price}</p>
+            
+            <div class="flex items-center justify-between mt-2">
+              <div class="flex items-center space-x-1">
+                <button
+                  onclick="window.updateCartQuantity('${item.id}', ${item.quantity - 1})"
+                  class="w-6 h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 text-xs"
+                >
+                  −
+                </button>
+                <span class="text-sm px-2">${item.quantity}</span>
+                <button
+                  onclick="window.updateCartQuantity('${item.id}', ${item.quantity + 1})"
+                  class="w-6 h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 text-xs"
+                >
+                  +
+                </button>
+              </div>
+              
+              <button
+                onclick="window.removeFromCart('${item.id}')"
+                class="text-red-500 hover:text-red-700 text-xs"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    updateTotal() {
+      const totalElement = document.getElementById('cart-total');
+      if (totalElement) {
+        totalElement.textContent = `€${this.getTotal().toFixed(2)}`;
+      }
+    }
+
+    async checkout() {
+      const email = document.getElementById('customer-email')?.value;
+      if (!email) {
+        alert('Por favor, introduce tu email');
+        return;
+      }
+
+      const checkoutBtn = document.getElementById('checkout-btn');
+      if (checkoutBtn) {
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = 'Procesando...';
+      }
+
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        alert(`¡Compra completada!\n\n${this.cart.length} ebook(s) enviados a: ${email}\nTotal: €${this.getTotal().toFixed(2)}`);
+        
+        this.clearCart();
+        this.toggleCart();
+        
+      } catch (error) {
+        alert('Error: ' + error.message);
+      } finally {
+        if (checkoutBtn) {
+          checkoutBtn.disabled = false;
+          checkoutBtn.innerHTML = `
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2-2H5a2 2 0 01-2-2z"></path>
+            </svg>
+            Comprar Ahora
+          `;
+        }
+      }
+    }
+
+    initializeEvents() {
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('#cart-toggle')) {
+          this.toggleCart();
+        }
+        if (e.target.closest('#cart-close') || e.target.closest('#cart-overlay')) {
+          this.toggleCart();
+        }
+        if (e.target.closest('#checkout-btn')) {
+          e.preventDefault();
+          this.checkout();
+        }
+      });
+    }
+  }
+
+  // Inicializar carrito
+  document.addEventListener('DOMContentLoaded', () => {
+    new ShoppingCart();
+  });
+</script>
