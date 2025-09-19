@@ -2,16 +2,19 @@
 // src/components/ShoppingCart.astro
 ---
 
-<!-- Icono del carrito flotante -->
+<!-- Icono del carrito flotante MEJORADO -->
 <div class="cart-container">
   <div id="cart-icon" class="cart-float-icon">
-    <button 
-      id="cart-toggle"
-      class="cart-button"
-    >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l-1.5-6M7 13h10M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6"></path>
-      </svg>
+    <button id="cart-toggle" class="cart-button">
+      <!-- Icono de carrito más elegante -->
+      <div class="cart-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          <circle cx="9" cy="19" r="2"></circle>
+          <circle cx="20" cy="19" r="2"></circle>
+        </svg>
+        <div class="cart-items-indicator"></div>
+      </div>
       <span id="cart-badge" class="cart-badge">0</span>
     </button>
   </div>
@@ -96,43 +99,131 @@
     pointer-events: all;
   }
 
+  /* BOTÓN MEJORADO */
   .cart-button {
-    background: #2563eb;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 12px;
+    padding: 16px;
     border-radius: 50%;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .cart-button:hover {
-    background: #1d4ed8;
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+  }
+
+  .cart-button:active {
+    transform: translateY(-1px);
+  }
+
+  .cart-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cart-items-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s ease;
+  }
+
+  .cart-items-indicator.has-items {
+    opacity: 1;
+    transform: scale(1);
+    animation: pulse 2s infinite;
   }
 
   .cart-badge {
     position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #dc2626;
+    top: -10px;
+    right: -10px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
     color: white;
     font-size: 12px;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     display: none;
     align-items: center;
     justify-content: center;
     font-weight: bold;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    animation: bounce-in 0.3s ease;
   }
 
   .cart-badge.show {
     display: flex;
   }
 
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.2);
+    }
+  }
+
+  @keyframes bounce-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Efecto de onda al hacer click */
+  .cart-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .cart-button:active::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  /* PANEL DEL CARRITO */
   .cart-panel {
     position: fixed;
     top: 0;
@@ -312,11 +403,16 @@
 
     updateCartIcon() {
       const badge = document.getElementById('cart-badge');
+      const indicator = document.querySelector('.cart-items-indicator');
       const count = this.cart.reduce((total, item) => total + item.quantity, 0);
       
       if (badge) {
         badge.textContent = count.toString();
         badge.classList.toggle('show', count > 0);
+      }
+
+      if (indicator) {
+        indicator.classList.toggle('has-items', count > 0);
       }
     }
 
