@@ -1,14 +1,13 @@
 ---
-// src/components/ShoppingCart.astro
+// src/components/ShoppingCart.astro - VERSIÓN PROFESIONAL
 ---
 
-<!-- Icono del carrito flotante MEJORADO -->
+<!-- Icono del carrito flotante PROFESIONAL -->
 <div class="cart-container">
   <div id="cart-icon" class="cart-float-icon">
     <button id="cart-toggle" class="cart-button">
-      <!-- Icono de carrito más elegante -->
       <div class="cart-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
           <circle cx="9" cy="19" r="2"></circle>
           <circle cx="20" cy="19" r="2"></circle>
@@ -19,65 +18,145 @@
     </button>
   </div>
 
-  <!-- Panel del carrito -->
+  <!-- Panel del carrito PROFESIONAL -->
   <div id="cart-panel" class="cart-panel">
     <div class="cart-panel-content">
       
-      <!-- Header -->
+      <!-- Header mejorado -->
       <div class="cart-header">
         <div class="flex justify-between items-center">
-          <h2 class="text-xl font-bold text-gray-900">🛒 Mi Carrito</h2>
-          <button id="cart-close" class="text-gray-500 hover:text-gray-700 text-2xl">
-            ×
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                <circle cx="9" cy="19" r="2"></circle>
+                <circle cx="20" cy="19" r="2"></circle>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-gray-900">Mi Carrito</h2>
+              <p id="cart-summary" class="text-sm text-gray-500">0 libros</p>
+            </div>
+          </div>
+          <button id="cart-close" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
       </div>
 
-      <!-- Contenido del carrito -->
+      <!-- Contenido del carrito mejorado -->
       <div id="cart-content" class="cart-content">
         <div id="cart-empty" class="cart-empty">
-          <div class="text-4xl mb-4">📚</div>
-          <p>Tu carrito está vacío</p>
-          <p class="text-sm mt-2">¡Añade algunos ebooks!</p>
+          <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5">
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              <circle cx="9" cy="19" r="2"></circle>
+              <circle cx="20" cy="19" r="2"></circle>
+            </svg>
+          </div>
+          <h3 class="font-semibold text-gray-900 mb-2">Tu carrito está vacío</h3>
+          <p class="text-sm text-gray-500 mb-4">¡Descubre nuestra colección de ebooks!</p>
+          <div class="flex items-center justify-center text-xs text-gray-400">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mr-1">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+            </svg>
+            Descarga inmediata tras la compra
+          </div>
         </div>
         
-        <div id="cart-items" class="space-y-4 hidden"></div>
+        <div id="cart-items" class="space-y-3 hidden"></div>
       </div>
 
-      <!-- Footer del carrito -->
+      <!-- Footer del carrito mejorado -->
       <div id="cart-footer" class="cart-footer">
-        <div class="mb-4">
-          <div class="flex justify-between items-center text-xl font-bold">
-            <span>Total:</span>
-            <span id="cart-total" class="text-green-600">€0.00</span>
+        <!-- Resumen de compra -->
+        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm text-gray-600">Subtotal:</span>
+            <span id="cart-subtotal" class="text-sm font-medium">€0.00</span>
+          </div>
+          <div class="flex justify-between items-center mb-3 pb-3 border-b border-gray-200">
+            <span class="text-sm text-gray-600">Descarga digital:</span>
+            <span class="text-sm font-medium text-green-600">Gratis</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-lg font-bold text-gray-900">Total:</span>
+            <span id="cart-total" class="text-xl font-bold text-gray-900">€0.00</span>
           </div>
         </div>
 
+        <!-- Campo de email mejorado -->
         <div class="mb-4">
-          <label class="block text-sm font-medium mb-2 text-gray-700">Email:</label>
-          <input
-            type="email"
-            id="customer-email"
-            placeholder="tu@email.com"
-            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="inline mr-2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            Email para recibir los ebooks
+          </label>
+          <div class="relative">
+            <input
+              type="email"
+              id="customer-email"
+              placeholder="tu@email.com"
+              class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+            />
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Los enlaces de descarga se enviarán a este email</p>
         </div>
 
+        <!-- Botón de compra mejorado -->
         <button
           id="checkout-btn"
-          class="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+          class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2-2H5a2 2 0 01-2-2z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
           </svg>
-          Comprar Ahora
+          <span id="checkout-text">Comprar Ahora</span>
         </button>
+
+        <!-- Garantías -->
+        <div class="mt-4 pt-4 border-t border-gray-200">
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="flex flex-col items-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" class="mb-1">
+                <polyline points="20,6 9,17 4,12"></polyline>
+              </svg>
+              <span class="text-xs text-gray-500">Descarga inmediata</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" class="mb-1">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <circle cx="12" cy="16" r="1"></circle>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span class="text-xs text-gray-500">Pago seguro</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" class="mb-1">
+                <path d="M9 12l2 2 4-4"></path>
+                <circle cx="12" cy="12" r="9"></circle>
+              </svg>
+              <span class="text-xs text-gray-500">Sin DRM</span>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
   </div>
 
-  <!-- Overlay -->
+  <!-- Overlay mejorado -->
   <div id="cart-overlay" class="cart-overlay"></div>
 </div>
 
@@ -93,38 +172,39 @@
 
   .cart-float-icon {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 24px;
+    right: 24px;
     z-index: 9999;
     pointer-events: all;
   }
 
-  /* BOTÓN MEJORADO */
+  /* BOTÓN PROFESIONAL */
   .cart-button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: white;
-    padding: 16px;
-    border-radius: 50%;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    padding: 18px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
     border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    width: 60px;
-    height: 60px;
+    width: 64px;
+    height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(10px);
   }
 
   .cart-button:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+    background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(79, 70, 229, 0.4);
   }
 
   .cart-button:active {
-    transform: translateY(-1px);
+    transform: translateY(-2px) scale(1.02);
   }
 
   .cart-icon {
@@ -136,12 +216,13 @@
 
   .cart-items-indicator {
     position: absolute;
-    top: -2px;
-    right: -2px;
-    width: 8px;
-    height: 8px;
-    background: #10b981;
+    top: -3px;
+    right: -3px;
+    width: 10px;
+    height: 10px;
+    background: linear-gradient(45deg, #10b981, #34d399);
     border-radius: 50%;
+    border: 2px solid white;
     opacity: 0;
     transform: scale(0);
     transition: all 0.3s ease;
@@ -150,40 +231,42 @@
   .cart-items-indicator.has-items {
     opacity: 1;
     transform: scale(1);
-    animation: pulse 2s infinite;
+    animation: pulse-glow 2s infinite;
   }
 
   .cart-badge {
     position: absolute;
-    top: -10px;
-    right: -10px;
-    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
     color: white;
-    font-size: 12px;
+    font-size: 11px;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     display: none;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
+    font-weight: 700;
     border: 2px solid white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    animation: bounce-in 0.3s ease;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    animation: bounce-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
   .cart-badge.show {
     display: flex;
   }
 
-  @keyframes pulse {
+  @keyframes pulse-glow {
     0%, 100% {
       opacity: 1;
       transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
     }
     50% {
       opacity: 0.8;
-      transform: scale(1.2);
+      transform: scale(1.1);
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0);
     }
   }
 
@@ -193,7 +276,7 @@
       transform: scale(0.3);
     }
     50% {
-      transform: scale(1.05);
+      transform: scale(1.1);
     }
     70% {
       transform: scale(0.9);
@@ -204,38 +287,20 @@
     }
   }
 
-  /* Efecto de onda al hacer click */
-  .cart-button::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-
-  .cart-button:active::before {
-    width: 300px;
-    height: 300px;
-  }
-
-  /* PANEL DEL CARRITO */
+  /* PANEL PROFESIONAL */
   .cart-panel {
     position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
-    width: 400px;
+    width: 420px;
     background: white;
-    box-shadow: -5px 0 25px rgba(0,0,0,0.3);
+    box-shadow: -10px 0 50px rgba(0,0,0,0.1);
     transform: translateX(100%);
-    transition: transform 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 9998;
     pointer-events: all;
+    backdrop-filter: blur(10px);
   }
 
   .cart-panel.show {
@@ -249,27 +314,27 @@
   }
 
   .cart-header {
-    padding: 20px;
-    border-bottom: 1px solid #e5e7eb;
-    background: #f9fafb;
+    padding: 24px;
+    border-bottom: 1px solid #f3f4f6;
+    background: linear-gradient(135deg, #fefefe 0%, #f9fafb 100%);
   }
 
   .cart-content {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 24px;
   }
 
   .cart-empty {
     text-align: center;
-    padding: 40px 0;
+    padding: 60px 20px;
     color: #6b7280;
   }
 
   .cart-footer {
-    padding: 20px;
-    border-top: 1px solid #e5e7eb;
-    background: #f9fafb;
+    padding: 24px;
+    border-top: 1px solid #f3f4f6;
+    background: linear-gradient(135deg, #fefefe 0%, #f9fafb 100%);
     display: none;
   }
 
@@ -283,12 +348,13 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
     z-index: 9997;
     pointer-events: all;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
   }
 
   .cart-overlay.show {
@@ -296,10 +362,54 @@
     visibility: visible;
   }
 
+  /* ITEMS DEL CARRITO */
+  .cart-item {
+    background: white;
+    border: 1px solid #f3f4f6;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+  }
+
+  .cart-item:hover {
+    border-color: #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  /* RESPONSIVE */
   @media (max-width: 768px) {
     .cart-panel {
       width: 100%;
     }
+    
+    .cart-float-icon {
+      top: 20px;
+      right: 20px;
+    }
+    
+    .cart-button {
+      width: 56px;
+      height: 56px;
+      padding: 16px;
+    }
+  }
+
+  /* SCROLLBAR PERSONALIZADA */
+  .cart-content::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .cart-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .cart-content::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 2px;
+  }
+
+  .cart-content::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
   }
 </style>
 
@@ -356,6 +466,9 @@
       this.cart = this.cart.filter(item => item.id !== id);
       this.saveCart();
       this.render();
+      
+      // Animación de eliminación
+      this.showNotification('Producto eliminado del carrito', 'warning');
     }
 
     updateQuantity(id, quantity) {
@@ -376,6 +489,10 @@
       return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     }
 
+    getItemCount() {
+      return this.cart.reduce((total, item) => total + item.quantity, 0);
+    }
+
     clearCart() {
       this.cart = [];
       this.saveCart();
@@ -392,11 +509,20 @@
         overlay.classList.toggle('show', this.isOpen);
         
         document.body.style.overflow = this.isOpen ? 'hidden' : '';
+        
+        // Focus trap para accesibilidad
+        if (this.isOpen) {
+          const firstInput = panel.querySelector('input');
+          if (firstInput) {
+            setTimeout(() => firstInput.focus(), 300);
+          }
+        }
       }
     }
 
     render() {
       this.updateCartIcon();
+      this.updateCartSummary();
       this.renderCartItems();
       this.updateTotal();
     }
@@ -404,15 +530,24 @@
     updateCartIcon() {
       const badge = document.getElementById('cart-badge');
       const indicator = document.querySelector('.cart-items-indicator');
-      const count = this.cart.reduce((total, item) => total + item.quantity, 0);
+      const count = this.getItemCount();
       
       if (badge) {
-        badge.textContent = count.toString();
+        badge.textContent = count > 99 ? '99+' : count.toString();
         badge.classList.toggle('show', count > 0);
       }
 
       if (indicator) {
         indicator.classList.toggle('has-items', count > 0);
+      }
+    }
+
+    updateCartSummary() {
+      const summary = document.getElementById('cart-summary');
+      const count = this.getItemCount();
+      
+      if (summary) {
+        summary.textContent = `${count} ${count === 1 ? 'libro' : 'libros'}`;
       }
     }
 
@@ -435,39 +570,41 @@
       footer.classList.add('show');
 
       itemsContainer.innerHTML = this.cart.map(item => `
-        <div class="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
-          <img
-            src="/${item.img}"
-            alt="${item.title}"
-            class="w-12 h-16 object-cover rounded"
-          />
-          <div class="flex-1 min-w-0">
-            <h3 class="font-medium text-sm text-gray-900">${item.title}</h3>
-            <p class="text-gray-600 text-xs">por ${item.author}</p>
-            <p class="text-green-600 font-bold text-sm">€${item.price}</p>
-            
-            <div class="flex items-center justify-between mt-2">
-              <div class="flex items-center space-x-1">
-                <button
-                  onclick="window.updateCartQuantity('${item.id}', ${item.quantity - 1})"
-                  class="w-6 h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 text-xs"
-                >
-                  −
-                </button>
-                <span class="text-sm px-2">${item.quantity}</span>
-                <button
-                  onclick="window.updateCartQuantity('${item.id}', ${item.quantity + 1})"
-                  class="w-6 h-6 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 text-xs"
-                >
-                  +
-                </button>
+        <div class="cart-item">
+          <div class="flex items-start space-x-4">
+            <div class="flex-shrink-0">
+              <img
+                src="/${item.img}"
+                alt="${item.title}"
+                class="w-16 h-20 object-cover rounded-lg shadow-sm"
+              />
+            </div>
+            <div class="flex-1 min-w-0">
+              <h3 class="font-semibold text-sm text-gray-900 line-clamp-2 leading-tight mb-1">${item.title}</h3>
+              <p class="text-gray-500 text-xs mb-2">por ${item.author}</p>
+              <div class="flex items-center justify-between">
+                <span class="text-lg font-bold text-green-600">€${item.price}</span>
+                <div class="flex items-center space-x-2">
+                  <button
+                    onclick="window.updateCartQuantity('${item.id}', ${item.quantity - 1})"
+                    class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors text-sm font-medium"
+                  >
+                    −
+                  </button>
+                  <span class="text-sm font-semibold px-3 py-1 bg-gray-50 rounded-full min-w-[2rem] text-center">${item.quantity}</span>
+                  <button
+                    onclick="window.updateCartQuantity('${item.id}', ${item.quantity + 1})"
+                    class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors text-sm font-medium"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-              
               <button
                 onclick="window.removeFromCart('${item.id}')"
-                class="text-red-500 hover:text-red-700 text-xs"
+                class="text-red-500 hover:text-red-700 text-xs font-medium mt-2 transition-colors"
               >
-                Eliminar
+                🗑️ Eliminar
               </button>
             </div>
           </div>
@@ -477,43 +614,91 @@
 
     updateTotal() {
       const totalElement = document.getElementById('cart-total');
+      const subtotalElement = document.getElementById('cart-subtotal');
+      const total = this.getTotal();
+      
       if (totalElement) {
-        totalElement.textContent = `€${this.getTotal().toFixed(2)}`;
+        totalElement.textContent = `€${total.toFixed(2)}`;
       }
+      
+      if (subtotalElement) {
+        subtotalElement.textContent = `€${total.toFixed(2)}`;
+      }
+    }
+
+    showNotification(message, type = 'success') {
+      // Crear notificación temporal
+      const notification = document.createElement('div');
+      notification.className = `fixed top-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg text-white text-sm font-medium z-[10000] transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500' : 'bg-orange-500'
+      }`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      // Animar entrada
+      setTimeout(() => {
+        notification.style.transform = 'translateX(-50%) translateY(0)';
+      }, 100);
+      
+      // Eliminar después de 3 segundos
+      setTimeout(() => {
+        notification.style.transform = 'translateX(-50%) translateY(-100%)';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      }, 3000);
     }
 
     async checkout() {
       const email = document.getElementById('customer-email')?.value;
       if (!email) {
-        alert('Por favor, introduce tu email');
+        this.showNotification('Por favor, introduce tu email', 'warning');
+        return;
+      }
+
+      // Validación de email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        this.showNotification('Por favor, introduce un email válido', 'warning');
         return;
       }
 
       const checkoutBtn = document.getElementById('checkout-btn');
-      if (checkoutBtn) {
+      const checkoutText = document.getElementById('checkout-text');
+      
+      if (checkoutBtn && checkoutText) {
         checkoutBtn.disabled = true;
-        checkoutBtn.innerHTML = 'Procesando...';
+        checkoutText.textContent = 'Procesando compra...';
+        checkoutBtn.style.opacity = '0.7';
       }
 
       try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Simular procesamiento
+        await new Promise(resolve => setTimeout(resolve, 2000));
         
-        alert(`¡Compra completada!\n\n${this.cart.length} ebook(s) enviados a: ${email}\nTotal: €${this.getTotal().toFixed(2)}`);
+        const count = this.getItemCount();
+        const total = this.getTotal();
+        
+        this.showNotification('¡Compra completada con éxito!', 'success');
+        
+        // Mostrar detalles de la compra
+        setTimeout(() => {
+          alert(`🎉 ¡Compra completada!\n\n📚 ${count} ebook${count > 1 ? 's' : ''} adquirido${count > 1 ? 's' : ''}\n💰 Total: €${total.toFixed(2)}\n📧 Enviado a: ${email}\n\n✅ Revisa tu email para los enlaces de descarga`);
+        }, 500);
         
         this.clearCart();
         this.toggleCart();
         
       } catch (error) {
-        alert('Error: ' + error.message);
+        this.showNotification('Error al procesar la compra. Inténtalo de nuevo.', 'warning');
       } finally {
-        if (checkoutBtn) {
+        if (checkoutBtn && checkoutText) {
           checkoutBtn.disabled = false;
-          checkoutBtn.innerHTML = `
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v10a2 2 0 01-2-2H5a2 2 0 01-2-2z"></path>
-            </svg>
-            Comprar Ahora
-          `;
+          checkoutText.textContent = 'Comprar Ahora';
+          checkoutBtn.style.opacity = '1';
         }
       }
     }
@@ -529,6 +714,13 @@
         if (e.target.closest('#checkout-btn')) {
           e.preventDefault();
           this.checkout();
+        }
+      });
+
+      // Cerrar con Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isOpen) {
+          this.toggleCart();
         }
       });
     }
