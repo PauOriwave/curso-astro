@@ -414,320 +414,140 @@
 </style>
 
 <script>
-  // Variables globales para evitar problemas de TypeScript
-  let cartInstance;
-  let cartData = [];
-
-  // Funciones globales que pueden ser llamadas desde HTML
-  window.updateCartQuantity = function(id, quantity) {
-    if (cartInstance) {
-      cartInstance.updateQuantity(id, quantity);
-    }
-  };
-
-  window.removeFromCart = function(id) {
-    if (cartInstance) {
-      cartInstance.removeFromCart(id);
-    }
-  };
-
-  class ShoppingCart {
-    constructor() {
-      this.cart = this.loadCart();
-      this.isOpen = false;
-      this.initializeEvents();
-      this.render();
-      
-      // Escuchar cuando se añaden productos
-      window.addEventListener('cart-updated', () => {
-        this.cart = this.loadCart();
-        this.render();
-      });
-
-      // Hacer disponible globalmente
-      cartInstance = this;
-      cartData = this.cart;
-    }
-
-    loadCart() {
-      try {
-        return JSON.parse(localStorage.getItem('ebook-cart') || '[]');
-      } catch {
-        return [];
-      }
-    }
-
-    saveCart() {
-      localStorage.setItem('ebook-cart', JSON.stringify(this.cart));
-      cartData = this.cart;
-    }
-
-    removeFromCart(id) {
-      this.cart = this.cart.filter(item => item.id !== id);
-      this.saveCart();
-      this.render();
-      
-      // Animación de eliminación
-      this.showNotification('Producto eliminado del carrito', 'warning');
-    }
-
-    updateQuantity(id, quantity) {
-      if (quantity <= 0) {
-        this.removeFromCart(id);
-        return;
-      }
-      
-      const item = this.cart.find(item => item.id === id);
-      if (item) {
-        item.quantity = quantity;
-        this.saveCart();
-        this.render();
-      }
-    }
-
-    getTotal() {
-      return this.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-    }
-
-    getItemCount() {
-      return this.cart.reduce((total, item) => total + item.quantity, 0);
-    }
-
-    clearCart() {
-      this.cart = [];
-      this.saveCart();
-      this.render();
-    }
-
-    toggleCart() {
-      this.isOpen = !this.isOpen;
-      const panel = document.getElementById('cart-panel');
-      const overlay = document.getElementById('cart-overlay');
-      
-      if (panel && overlay) {
-        panel.classList.toggle('show', this.isOpen);
-        overlay.classList.toggle('show', this.isOpen);
-        
-        document.body.style.overflow = this.isOpen ? 'hidden' : '';
-        
-        // Focus trap para accesibilidad
-        if (this.isOpen) {
-          const firstInput = panel.querySelector('input');
-          if (firstInput) {
-            setTimeout(() => firstInput.focus(), 300);
-          }
+  // Esperar a que todo esté cargado
+  window.addEventListener('load', function() {
+    
+    // Variables
+    const CONSENT_KEY = 'ebook-cookie-consent';
+    const banner = document.getElementById('cookie-consent');
+    const settingsBtn = document.getElementById('cookie-settings');
+    
+    // Verificar si ya dio consentimiento
+    const hasConsent = localStorage.getItem(CONSENT_KEY);
+    
+    if (!hasConsent) {
+      // Mostrar banner después de 1 segundo
+      setTimeout(function() {
+        if (banner) {
+          banner.classList.add('show');
         }
+      }, 1000);
+    } else {
+      // Mostrar botón de configuración
+      if (settingsBtn) {
+        settingsBtn.style.display = 'block';
       }
     }
-
-    render() {
-      this.updateCartIcon();
-      this.updateCartSummary();
-      this.renderCartItems();
-      this.updateTotal();
+    
+    // Función para ocultar banner y mostrar botón
+    function hideBannerShowButton() {
+      if (banner) {
+        banner.classList.remove('show');
+      }
+      setTimeout(function() {
+        if (settingsBtn) {
+          settingsBtn.style.display = 'block';
+        }
+      }, 300);
     }
-
-    updateCartIcon() {
-      const badge = document.getElementById('cart-badge');
-      const indicator = document.querySelector('.cart-items-indicator');
-      const count = this.getItemCount();
-      
-      if (badge) {
-        badge.textContent = count > 99 ? '99+' : count.toString();
-        badge.classList.toggle('show', count > 0);
-      }
-
-      if (indicator) {
-        indicator.classList.toggle('has-items', count > 0);
-      }
-    }
-
-    updateCartSummary() {
-      const summary = document.getElementById('cart-summary');
-      const count = this.getItemCount();
-      
-      if (summary) {
-        summary.textContent = `${count} ${count === 1 ? 'libro' : 'libros'}`;
-      }
-    }
-
-    renderCartItems() {
-      const itemsContainer = document.getElementById('cart-items');
-      const emptyContainer = document.getElementById('cart-empty');
-      const footer = document.getElementById('cart-footer');
-
-      if (!itemsContainer || !emptyContainer || !footer) return;
-
-      if (this.cart.length === 0) {
-        itemsContainer.classList.add('hidden');
-        emptyContainer.style.display = 'block';
-        footer.classList.remove('show');
-        return;
-      }
-
-      itemsContainer.classList.remove('hidden');
-      emptyContainer.style.display = 'none';
-      footer.classList.add('show');
-
-      itemsContainer.innerHTML = this.cart.map(item => `
-        <div class="cart-item">
-          <div class="flex items-start space-x-4">
-            <div class="flex-shrink-0">
-              <img
-                src="/${item.img}"
-                alt="${item.title}"
-                class="w-16 h-20 object-cover rounded-lg shadow-sm"
-              />
-            </div>
-            <div class="flex-1 min-w-0">
-              <h3 class="font-semibold text-sm text-gray-900 line-clamp-2 leading-tight mb-1">${item.title}</h3>
-              <p class="text-gray-500 text-xs mb-2">por ${item.author}</p>
-              <div class="flex items-center justify-between">
-                <span class="text-lg font-bold text-green-600">€${item.price}</span>
-                <div class="flex items-center space-x-2">
-                  <button
-                    onclick="window.updateCartQuantity('${item.id}', ${item.quantity - 1})"
-                    class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors text-sm font-medium"
-                  >
-                    −
-                  </button>
-                  <span class="text-sm font-semibold px-3 py-1 bg-gray-50 rounded-full min-w-[2rem] text-center">${item.quantity}</span>
-                  <button
-                    onclick="window.updateCartQuantity('${item.id}', ${item.quantity + 1})"
-                    class="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-full transition-colors text-sm font-medium"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-              <button
-                onclick="window.removeFromCart('${item.id}')"
-                class="text-red-500 hover:text-red-700 text-xs font-medium mt-2 transition-colors"
-              >
-                🗑️ Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    updateTotal() {
-      const totalElement = document.getElementById('cart-total');
-      const subtotalElement = document.getElementById('cart-subtotal');
-      const total = this.getTotal();
-      
-      if (totalElement) {
-        totalElement.textContent = `€${total.toFixed(2)}`;
-      }
-      
-      if (subtotalElement) {
-        subtotalElement.textContent = `€${total.toFixed(2)}`;
-      }
-    }
-
-    showNotification(message, type = 'success') {
-      // Crear notificación temporal
+    
+    // Función para mostrar notificación
+    function showNotification(message) {
       const notification = document.createElement('div');
-      notification.className = `fixed top-4 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg text-white text-sm font-medium z-[10000] transition-all duration-300 ${
-        type === 'success' ? 'bg-green-500' : 'bg-orange-500'
-      }`;
+      notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:12px 20px;border-radius:8px;z-index:10000;font-size:14px;';
       notification.textContent = message;
-      
       document.body.appendChild(notification);
       
-      // Animar entrada
-      setTimeout(() => {
-        notification.style.transform = 'translateX(-50%) translateY(0)';
-      }, 100);
-      
-      // Eliminar después de 3 segundos
-      setTimeout(() => {
-        notification.style.transform = 'translateX(-50%) translateY(-100%)';
-        setTimeout(() => {
-          if (notification.parentNode) {
-            notification.parentNode.removeChild(notification);
-          }
-        }, 300);
+      setTimeout(function() {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
       }, 3000);
     }
-
-    async checkout() {
-      const email = document.getElementById('customer-email')?.value;
-      if (!email) {
-        this.showNotification('Por favor, introduce tu email', 'warning');
-        return;
-      }
-
-      // Validación de email
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        this.showNotification('Por favor, introduce un email válido', 'warning');
-        return;
-      }
-
-      const checkoutBtn = document.getElementById('checkout-btn');
-      const checkoutText = document.getElementById('checkout-text');
-      
-      if (checkoutBtn && checkoutText) {
-        checkoutBtn.disabled = true;
-        checkoutText.textContent = 'Procesando compra...';
-        checkoutBtn.style.opacity = '0.7';
-      }
-
-      try {
-        // Simular procesamiento
-        await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Event listeners
+    const acceptAllBtn = document.getElementById('accept-all');
+    const rejectBtn = document.getElementById('reject-cookies');
+    const acceptSelectedBtn = document.getElementById('accept-selected');
+    
+    if (acceptAllBtn) {
+      acceptAllBtn.addEventListener('click', function() {
+        localStorage.setItem(CONSENT_KEY, JSON.stringify({
+          essential: true,
+          analytics: true,
+          marketing: true,
+          timestamp: Date.now()
+        }));
         
-        const count = this.getItemCount();
-        const total = this.getTotal();
-        
-        this.showNotification('¡Compra completada con éxito!', 'success');
-        
-        // Mostrar detalles de la compra
-        setTimeout(() => {
-          alert(`🎉 ¡Compra completada!\n\n📚 ${count} ebook${count > 1 ? 's' : ''} adquirido${count > 1 ? 's' : ''}\n💰 Total: €${total.toFixed(2)}\n📧 Enviado a: ${email}\n\n✅ Revisa tu email para los enlaces de descarga`);
-        }, 500);
-        
-        this.clearCart();
-        this.toggleCart();
-        
-      } catch (error) {
-        this.showNotification('Error al procesar la compra. Inténtalo de nuevo.', 'warning');
-      } finally {
-        if (checkoutBtn && checkoutText) {
-          checkoutBtn.disabled = false;
-          checkoutText.textContent = 'Comprar Ahora';
-          checkoutBtn.style.opacity = '1';
-        }
-      }
-    }
-
-    initializeEvents() {
-      document.addEventListener('click', (e) => {
-        if (e.target.closest('#cart-toggle')) {
-          this.toggleCart();
-        }
-        if (e.target.closest('#cart-close') || e.target.closest('#cart-overlay')) {
-          this.toggleCart();
-        }
-        if (e.target.closest('#checkout-btn')) {
-          e.preventDefault();
-          this.checkout();
-        }
-      });
-
-      // Cerrar con Escape
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && this.isOpen) {
-          this.toggleCart();
-        }
+        showNotification('✅ Todas las cookies aceptadas');
+        hideBannerShowButton();
       });
     }
-  }
-
-  // Inicializar carrito
-  document.addEventListener('DOMContentLoaded', () => {
-    new ShoppingCart();
+    
+    if (rejectBtn) {
+      rejectBtn.addEventListener('click', function() {
+        localStorage.setItem(CONSENT_KEY, JSON.stringify({
+          essential: true,
+          analytics: false,
+          marketing: false,
+          timestamp: Date.now()
+        }));
+        
+        showNotification('✅ Solo cookies esenciales');
+        hideBannerShowButton();
+      });
+    }
+    
+    if (acceptSelectedBtn) {
+      acceptSelectedBtn.addEventListener('click', function() {
+        // CASTING EXPLÍCITO para evitar errores de TypeScript
+        const analyticsElement = document.getElementById('analytics-cookies');
+        const marketingElement = document.getElementById('marketing-cookies');
+        
+        const analyticsChecked = analyticsElement && analyticsElement instanceof HTMLInputElement ? analyticsElement.checked : false;
+        const marketingChecked = marketingElement && marketingElement instanceof HTMLInputElement ? marketingElement.checked : false;
+        
+        localStorage.setItem(CONSENT_KEY, JSON.stringify({
+          essential: true,
+          analytics: analyticsChecked,
+          marketing: marketingChecked,
+          timestamp: Date.now()
+        }));
+        
+        showNotification('✅ Preferencias guardadas');
+        hideBannerShowButton();
+      });
+    }
+    
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', function() {
+        if (banner) {
+          banner.classList.add('show');
+        }
+        settingsBtn.style.display = 'none';
+        
+        // Cargar preferencias actuales con CASTING SEGURO
+        try {
+          const currentConsent = JSON.parse(localStorage.getItem(CONSENT_KEY) || '{}');
+          
+          if (currentConsent.analytics) {
+            const analyticsElement = document.getElementById('analytics-cookies');
+            if (analyticsElement && analyticsElement instanceof HTMLInputElement) {
+              analyticsElement.checked = true;
+            }
+          }
+          
+          if (currentConsent.marketing) {
+            const marketingElement = document.getElementById('marketing-cookies');
+            if (marketingElement && marketingElement instanceof HTMLInputElement) {
+              marketingElement.checked = true;
+            }
+          }
+        } catch (e) {
+          console.log('Error cargando preferencias:', e);
+        }
+      });
+    }
+    
   });
 </script>

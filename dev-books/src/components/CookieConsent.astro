@@ -1,0 +1,323 @@
+---
+// src/components/CookieConsent.astro
+---
+
+<!-- Banner de consentimiento de cookies -->
+<div id="cookie-consent" class="cookie-consent">
+  <div class="cookie-content">
+    
+    <!-- Icono de cookie -->
+    <div class="cookie-icon">
+      🍪
+    </div>
+
+    <!-- Contenido del mensaje -->
+    <div class="cookie-message">
+      <h3 class="cookie-title">Utilizamos cookies</h3>
+      <p class="cookie-text">
+        Este sitio usa cookies para mejorar tu experiencia. Puedes aceptar todas o configurar tus preferencias.
+        <a href="/politica-cookies" class="cookie-link">Más información</a>
+      </p>
+      
+      <!-- Opciones simples -->
+      <div class="cookie-options">
+        <label class="cookie-option">
+          <input type="checkbox" id="analytics-cookies">
+          <span>Analíticas</span>
+        </label>
+        <label class="cookie-option">
+          <input type="checkbox" id="marketing-cookies">
+          <span>Marketing</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="cookie-actions">
+      <button id="reject-cookies" class="cookie-btn secondary">
+        Solo esenciales
+      </button>
+      <button id="accept-selected" class="cookie-btn secondary">
+        Guardar preferencias
+      </button>
+      <button id="accept-all" class="cookie-btn primary">
+        Aceptar todas
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Botón flotante para reconfigurar -->
+<button id="cookie-settings" class="cookie-settings-btn" style="display: none;">
+  ⚙️
+</button>
+
+<style>
+  .cookie-consent {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    padding: 20px;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .cookie-consent.show {
+    transform: translateY(0);
+  }
+
+  .cookie-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .cookie-icon {
+    font-size: 32px;
+    background: #fef3c7;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cookie-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .cookie-text {
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .cookie-link {
+    color: #3b82f6;
+    text-decoration: underline;
+  }
+
+  .cookie-options {
+    display: flex;
+    gap: 16px;
+  }
+
+  .cookie-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .cookie-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 180px;
+  }
+
+  .cookie-btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    border: 1px solid;
+    transition: all 0.2s ease;
+  }
+
+  .cookie-btn.primary {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+
+  .cookie-btn.primary:hover {
+    background: #2563eb;
+  }
+
+  .cookie-btn.secondary {
+    background: white;
+    color: #374151;
+    border-color: #d1d5db;
+  }
+
+  .cookie-btn.secondary:hover {
+    background: #f9fafb;
+  }
+
+  .cookie-settings-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    background: #374151;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 9998;
+  }
+
+  .cookie-settings-btn:hover {
+    background: #1f2937;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .cookie-content {
+      grid-template-columns: 1fr;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .cookie-actions {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Esperar a que todo esté cargado
+  window.addEventListener('load', function() {
+    
+    // Variables
+    const CONSENT_KEY = 'ebook-cookie-consent';
+    const banner = document.getElementById('cookie-consent');
+    const settingsBtn = document.getElementById('cookie-settings');
+    
+    // Verificar si ya dio consentimiento
+    const hasConsent = localStorage.getItem(CONSENT_KEY);
+    
+    if (!hasConsent) {
+      // Mostrar banner después de 1 segundo
+      setTimeout(function() {
+        if (banner) {
+          banner.classList.add('show');
+        }
+      }, 1000);
+    } else {
+      // Mostrar botón de configuración
+      if (settingsBtn) {
+        settingsBtn.style.display = 'block';
+      }
+    }
+    
+    // Función para ocultar banner y mostrar botón
+    function hideBannerShowButton() {
+      if (banner) {
+        banner.classList.remove('show');
+      }
+      setTimeout(function() {
+        if (settingsBtn) {
+          settingsBtn.style.display = 'block';
+        }
+      }, 300);
+    }
+    
+    // Función para mostrar notificación
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:12px 20px;border-radius:8px;z-index:10000;font-size:14px;';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(function() {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 3000);
+    }
+    
+    // Event listeners
+    const acceptAllBtn = document.getElementById('accept-all');
+    const rejectBtn = document.getElementById('reject-cookies');
+    const acceptSelectedBtn = document.getElementById('accept-selected');
+    
+    if (acceptAllBtn) {
+      acceptAllBtn.addEventListener('click', function() {
+        localStorage.setItem(CONSENT_KEY, JSON.stringify({
+          essential: true,
+          analytics: true,
+          marketing: true,
+          timestamp: Date.now()
+        }));
+        
+        showNotification('✅ Todas las cookies aceptadas');
+        hideBannerShowButton();
+      });
+    }
+    
+    if (rejectBtn) {
+      rejectBtn.addEventListener('click', function() {
+        localStorage.setItem(CONSENT_KEY, JSON.stringify({
+          essential: true,
+          analytics: false,
+          marketing: false,
+          timestamp: Date.now()
+        }));
+        
+        showNotification('✅ Solo cookies esenciales');
+        hideBannerShowButton();
+      });
+    }
+    
+    if (acceptSelectedBtn) {
+      acceptSelectedBtn.addEventListener('click', function() {
+        const analyticsChecked = document.getElementById('analytics-cookies')?.checked || false;
+        const marketingChecked = document.getElementById('marketing-cookies')?.checked || false;
+        
+        localStorage.setItem(CONSENT_KEY, JSON.stringify({
+          essential: true,
+          analytics: analyticsChecked,
+          marketing: marketingChecked,
+          timestamp: Date.now()
+        }));
+        
+        showNotification('✅ Preferencias guardadas');
+        hideBannerShowButton();
+      });
+    }
+    
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', function() {
+        if (banner) {
+          banner.classList.add('show');
+        }
+        settingsBtn.style.display = 'none';
+        
+        // Cargar preferencias actuales
+        try {
+          const currentConsent = JSON.parse(localStorage.getItem(CONSENT_KEY) || '{}');
+          if (currentConsent.analytics) {
+            const analyticsCheckbox = document.getElementById('analytics-cookies');
+            if (analyticsCheckbox) analyticsCheckbox.checked = true;
+          }
+          if (currentConsent.marketing) {
+            const marketingCheckbox = document.getElementById('marketing-cookies');
+            if (marketingCheckbox) marketingCheckbox.checked = true;
+          }
+        } catch (e) {
+          console.log('Error cargando preferencias:', e);
+        }
+      });
+    }
+    
+  });
+</script>
